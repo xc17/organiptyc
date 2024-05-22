@@ -54,10 +54,6 @@ export default function SignUpForm() {
             });
     }
 
-    function handleArtascChange(e: any) {
-        setArtascFile(e.target.files[0]);
-    }
-
     async function handleCreateProfile(e: any) {
         e.preventDefault();
         if (!artascFile) return;
@@ -66,7 +62,7 @@ export default function SignUpForm() {
             if (user) {
                 const storageRef = ref(
                     storage,
-                    `profile/${user.uid}/artasc/${artascFile}`
+                    `profile/${user.uid}/artasc/${artascFile.name}`
                 );
 
                 const profileCollectionRef = collection(db, "profile");
@@ -76,11 +72,10 @@ export default function SignUpForm() {
                     await setDoc(profileDocRef, {
                         uid: user.uid,
                         organizationName: organizationName,
-                        artascFile: artascFile.name,
                         dateCreated: new Date().toDateString(),
                     });
 
-                    await uploadBytes(storageRef, artascFile);
+                    await uploadBytes(storageRef, artascFile.name);
                     await sendEmailVerification(user);
 
                     console.log(
@@ -148,7 +143,12 @@ export default function SignUpForm() {
                         </div>
                         <div>
                             <label>ARTICLES OF ASSOCIATION</label>
-                            <input type="file" onChange={handleArtascChange} />
+                            <input
+                                type="file"
+                                onChange={(e: any) => {
+                                    setArtascFile(e.target.files[0]);
+                                }}
+                            />
                         </div>
                         <div>
                             <input
